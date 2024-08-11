@@ -10,7 +10,8 @@ LOG_FILE="${LOG_DIR}/codinghub.log"
 # Function to start the application
 function start() {
     echo "Pulling latest changes from Git..."
-    git pull
+    git fetch
+    git reset --hard origin/master
 
     echo "Stopping any running instances..."
     if [ -f ${PID_FILE} ]; then
