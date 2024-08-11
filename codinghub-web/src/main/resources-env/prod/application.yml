@@ -1,9 +1,10 @@
 spring:
   application:
-    name: codinghub-service
+    name: codinghub-web
   datasource:
     url: jdbc:mysql://localhost:3306/codinghub?useSSL=false&serverTimezone=UTC
     username: root
     password: hsc0423
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+server:
+  port: 80

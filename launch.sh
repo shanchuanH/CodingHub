@@ -29,7 +29,7 @@ function start() {
     fi
 
     echo "Building the project..."
-    mvn clean install -DskipTests
+    mvn clean install -DskipTests -Pprod
 
     echo "Deploying the new JAR..."
     mv ${WEB_PATH}/target/${JAR_NAME} ./ || { echo "Failed to move JAR file"; exit 1; }
