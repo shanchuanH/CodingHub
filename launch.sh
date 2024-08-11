@@ -14,7 +14,12 @@ function start() {
 
     echo "Stopping any running instances..."
     if [ -f ${PID_FILE} ]; then
-        cat ${PID_FILE} | xargs -I {} kill {}
+        if kill -0 $(cat ${PID_FILE}); then
+            cat ${PID_FILE} | xargs -I {} kill {}
+            echo "Previous instance stopped."
+        else
+            echo "No running instance found."
+        fi
         rm -f ${PID_FILE}
     fi
 
@@ -24,13 +29,10 @@ function start() {
     fi
 
     echo "Building the project..."
-    mvn clean install -Dmaven.test.skip=True
-    cd ${WEB_PATH}
-    mvn clean package spring-boot:repackage -Dmaven.test.skip=true
-    cd -
+    mvn clean install -DskipTests
 
     echo "Deploying the new JAR..."
-    mv ${WEB_PATH}/target/${JAR_NAME} ./
+    mv ${WEB_PATH}/target/${JAR_NAME} ./ || { echo "Failed to move JAR file"; exit 1; }
 
     run
 }
@@ -39,7 +41,12 @@ function start() {
 function restart() {
     echo "Restarting the application..."
     if [ -f ${PID_FILE} ]; then
-        cat ${PID_FILE} | xargs -I {} kill {}
+        if kill -0 $(cat ${PID_FILE}); then
+            cat ${PID_FILE} | xargs -I {} kill {}
+            echo "Previous instance stopped."
+        else
+            echo "No running instance found."
+        fi
         rm -f ${PID_FILE}
     fi
 
@@ -62,7 +69,7 @@ if [ $# == 0 ]; then
   echo "Missing command: start | restart"
 elif [ $1 == 'start' ]; then
   start
-elif [ $1 == 'restart' ];then
+elif [ $1 == 'restart' ]; then
   restart
 else
   echo "Illegal command. Supported commands: start | restart"
