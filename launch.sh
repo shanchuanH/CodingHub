@@ -4,6 +4,8 @@
 WEB_PATH="codinghub-web"
 JAR_NAME="codinghub-web-0.0.1-SNAPSHOT.jar"
 PID_FILE="pid.log"
+LOG_DIR="logs"
+LOG_FILE="${LOG_DIR}/codinghub.log"
 
 # Function to start the application
 function start() {
@@ -46,10 +48,13 @@ function restart() {
 
 # Function to run the application
 function run() {
+    # Ensure the log directory exists
+    mkdir -p ${LOG_DIR}
+
     echo "Starting the application..."
-    nohup java -server -Xms1g -Xmx1g -Xmn512m -XX:NativeMemoryTracking=detail -XX:-OmitStackTraceInFastThrow -jar ${JAR_NAME} > /dev/null 2>&1 &
+    nohup java -server -Xms1g -Xmx1g -Xmn512m -XX:NativeMemoryTracking=detail -XX:-OmitStackTraceInFastThrow -jar ${JAR_NAME} > ${LOG_FILE} 2>&1 &
     echo $! > ${PID_FILE}
-    echo "Application started with PID $(cat ${PID_FILE})"
+    echo "Application started with PID $(cat ${PID_FILE}). Logs are being written to ${LOG_FILE}."
 }
 
 # Main script execution
