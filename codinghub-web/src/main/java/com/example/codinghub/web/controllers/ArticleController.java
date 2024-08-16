@@ -6,6 +6,7 @@ import com.example.codinghub.common.request.ArticleCreateRequest;
 import com.example.codinghub.common.request.ArticleEditRequest;
 import com.example.codinghub.common.vos.ArticleDetailVO;
 import com.example.codinghub.common.vos.ArticleVO;
+import com.example.codinghub.common.vos.CommonResponse;
 import com.example.codinghub.service.service.ArticleService;
 import com.example.codinghub.web.convert.ArticleConvert;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/articles")
+@RequestMapping("/api/articles")
 @Tag(name = "Article Management", description = "Operations related to articles")
 public class ArticleController {
 
@@ -31,18 +32,20 @@ public class ArticleController {
      */
     @Operation(summary = "Preview Articles", description = "Returns a list of articles for preview")
     @GetMapping("/listAllArticles")
-    public List<ArticleVO> listAllArticles() {
+    public CommonResponse<List<ArticleVO>> listAllArticles() {
         List<ArticleDTO> articleDTOs = articleService.listAllArticles();
-        return articleDTOs.stream()
+        List<ArticleVO> articleVOs = articleDTOs.stream()
                 .map(ArticleConvert::toArticleVO)
                 .collect(Collectors.toList());
+        return CommonResponse.success(articleVOs);
     }
 
     @Operation(summary = "Preview Article", description = "Returns a specific article for preview")
     @GetMapping("/preview/{id}")
-    public ArticleVO previewArticle(@PathVariable Long id) {
+    public CommonResponse<ArticleVO> previewArticle(@PathVariable Long id) {
         ArticleDTO articleDTO = articleService.getArticle(id);
-        return ArticleConvert.toArticleVO(articleDTO);
+        ArticleVO articleVO = ArticleConvert.toArticleVO(articleDTO);
+        return CommonResponse.success(articleVO);
     }
 
     /**
@@ -53,9 +56,10 @@ public class ArticleController {
      */
     @Operation(summary = "Get Full Article", description = "Returns the full details of a specific article")
     @GetMapping("/detail/{id}")
-    public ArticleDetailVO getFullArticle(@PathVariable Long id) {
+    public CommonResponse<ArticleDetailVO> getFullArticle(@PathVariable Long id) {
         ArticleDetailDTO fullArticle = articleService.getFullArticle(id);
-        return ArticleConvert.toArticleDetailVO(fullArticle);
+        ArticleDetailVO articleDetailVO = ArticleConvert.toArticleDetailVO(fullArticle);
+        return CommonResponse.success(articleDetailVO);
     }
 
     /**
@@ -66,9 +70,10 @@ public class ArticleController {
      */
     @Operation(summary = "Create Article", description = "Creates a new article with the provided data")
     @PostMapping("/create")
-    public ArticleVO createArticle(@RequestBody ArticleCreateRequest request) {
+    public CommonResponse<ArticleVO> createArticle(@RequestBody ArticleCreateRequest request) {
         ArticleDTO createdArticleDTO = articleService.createArticle(request);
-        return ArticleConvert.toArticleVO(createdArticleDTO);
+        ArticleVO articleVO = ArticleConvert.toArticleVO(createdArticleDTO);
+        return CommonResponse.success(articleVO);
     }
 
     /**
@@ -80,9 +85,10 @@ public class ArticleController {
      */
     @Operation(summary = "Edit Article", description = "Edits an existing article with the provided data")
     @PostMapping("/{id}")
-    public ArticleVO editArticle(@PathVariable Long id, @RequestBody ArticleEditRequest request) {
+    public CommonResponse<ArticleVO> editArticle(@PathVariable Long id, @RequestBody ArticleEditRequest request) {
         ArticleDTO updatedArticleDTO = articleService.editArticle(id, request);
-        return ArticleConvert.toArticleVO(updatedArticleDTO);
+        ArticleVO articleVO = ArticleConvert.toArticleVO(updatedArticleDTO);
+        return CommonResponse.success(articleVO);
     }
 
     /**
@@ -93,8 +99,9 @@ public class ArticleController {
      */
     @Operation(summary = "Delete Article", description = "Deletes a specific article by ID")
     @DeleteMapping("/{id}")
-    public String deleteArticle(@PathVariable Long id) {
+    public CommonResponse<String> deleteArticle(@PathVariable Long id) {
         boolean isDeleted = articleService.deleteArticle(id);
-        return isDeleted ? "Article deleted successfully" : "Failed to delete the article";
+        return isDeleted ? CommonResponse.success("Article deleted successfully")
+                : CommonResponse.error(400, "Failed to delete the article");
     }
 }
