@@ -56,11 +56,13 @@ public class UserFootServiceImpl implements UserFootService {
                 userFootEntity.setReadStat(1);
                 return true;
             case PRAISE:
-            case CANCEL_PRAISE:
                 return compareAndUpdate(userFootEntity::getPraiseStat, userFootEntity::setPraiseStat, 1);
+            case CANCEL_PRAISE:
+                return compareAndUpdate(userFootEntity::getPraiseStat, userFootEntity::setPraiseStat, 0);
             case COLLECTION:
-            case CANCEL_COLLECTION:
                 return compareAndUpdate(userFootEntity::getCollectionStat, userFootEntity::setCollectionStat, 1);
+            case CANCEL_COLLECTION:
+                return compareAndUpdate(userFootEntity::getCollectionStat, userFootEntity::setCollectionStat, 0);
             default:
                 return false;
         }
