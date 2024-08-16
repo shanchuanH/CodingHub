@@ -36,6 +36,7 @@ public class UserFootServiceImpl implements UserFootService {
             userFootEntity = UserFootEntity.builder().build();
             userFootEntity.setDocumentId(docId);
             userFootEntity.setUserId(usrId);
+            userFootEntity.setReadStat(1);
             setUserFootStat(userFootEntity, operateType);
         } else {
             setUserFootStat(userFootEntity, operateType);
