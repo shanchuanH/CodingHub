@@ -2,6 +2,7 @@ package com.example.codinghub.web.controllers;
 
 import com.example.codinghub.common.enums.OperateTypeEnum;
 import com.example.codinghub.common.vos.CommonResponse;
+import com.example.codinghub.service.service.RabbitMQSender;
 import com.example.codinghub.service.service.UserFootService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +17,9 @@ public class ArticleRestController {
 
     @Resource
     private UserFootService userFootService;
+
+    @Resource
+    private RabbitMQSender rabbitMQSender;
 
     /**
      * Perform an operation on an article (like, unlike, collect, uncollect).
@@ -36,6 +40,9 @@ public class ArticleRestController {
                                                     @RequestParam String userId,
                                                     @RequestParam Integer operateCode) {
         userFootService.saveOrUpdateUserFoot(articleId, userId, OperateTypeEnum.formCode(operateCode));
+        if (operateCode == OperateTypeEnum.PRAISE.getCode()) {
+            rabbitMQSender.sendPraiseNotification(articleId, userId);
+        }
         return CommonResponse.success(true);
     }
 }
